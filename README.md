@@ -157,8 +157,6 @@ eae stop         # DGX Spark
 
 | File | Committed | Purpose |
 |---|---|---|
-| `config/config.yaml` | ❌ gitignored | Service URLs, model names, vision intervals |
-| `config/params.yaml` | ❌ gitignored | LLM params, audio device IDs, thresholds |
 | `config/personality.yaml` | ✅ | Companion name, persona, system prompt |
 | `config/simulation.yaml` | ✅ | Sim mode toggle |
 | `config/config.example.yaml` | ✅ | Template — copy and fill in |
