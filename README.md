@@ -48,7 +48,7 @@ main.py                         vllm-chat-vision  :8012
 ### 1. Clone and install (PC)
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/eyes-and-ears.git
+git clone https://github.com/calico88x/dgx-eyes-and-ears.git
 cd eyes-and-ears
 pip install -r requirements.txt
 ```
