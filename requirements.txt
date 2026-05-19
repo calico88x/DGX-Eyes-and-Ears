@@ -1,4 +1,4 @@
-# ── Eyes and Ears — Z790 client requirements ──────────────────────────────
+# ── Eyes and Ears — Windows PC client requirements ──────────────────────────────
 #
 # Install:  pip install -r requirements.txt
 # Python:   3.11+
