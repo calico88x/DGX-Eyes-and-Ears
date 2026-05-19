@@ -27,7 +27,7 @@ main.py                         vllm-chat-vision  :8012
 ```
 
 **Key design decisions:**
-- Vision captures a frame every 8s and keeps it as ambient context
+- Vision captures a frame every 8s and keeps it as ambient context (Configurable)
 - When you speak, the raw JPEG is injected directly into the LLM request — the VL model sees actual pixels, not a text description
 - Vision-triggered reactions use the text description path (classifier needs text to score)
 - Rule-based classifier runs on CPU — no GPU competition with inference
