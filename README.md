@@ -4,6 +4,8 @@ An AI companion that can see your screen and hear your voice. It watches what
 you're doing, reacts to what's on screen, responds to speech, and maintains
 memory across conversations.
 
+## Specifically designed for DGX Spark for inference server
+
 ```
 You speak  →  Whisper (GPU)  →  transcript
 Screen     →  JPEG frame     →  VL model sees pixels directly
