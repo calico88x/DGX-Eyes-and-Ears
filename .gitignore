@@ -1,0 +1,49 @@
+# ── Eyes and Ears — .gitignore ─────────────────────────────────────────────
+
+# Config with real values (IPs, device IDs) — use *.example.yaml as templates
+config/config.yaml
+config/params.yaml
+
+# Memory database — contains conversation history (PII)
+data/
+*.db
+
+# Log files
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment files
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test artifacts
+tests/test.mp3
+tests/*.mp3
+tests/*.wav

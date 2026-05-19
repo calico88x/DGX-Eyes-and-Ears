@@ -1,0 +1,47 @@
+# config/config.example.yaml
+#
+# Copy to config/config.yaml and fill in your values.
+# config/config.yaml is gitignored — never commit real IPs or keys.
+
+services:
+  litellm:
+    base_url: "http://YOUR_ZGX_IP:4000"   # LiteLLM proxy on ZGX
+    api_key: "sk-local"                    # LiteLLM master key (if set)
+
+  stt:
+    base_url: "ws://YOUR_ZGX_IP:9091/asr" # Whisper ASR WebSocket
+    type: "websocket"
+    chunk_ms: 250
+    sample_rate: 16000
+    channels: 1
+
+  tts:
+    base_url: "http://YOUR_ZGX_IP:8880"   # Kokoro TTS
+    voice: "af_heart"
+    type: "http_stream"
+
+  vision:
+    base_url: "http://YOUR_ZGX_IP:4000"   # Routes through LiteLLM
+    type: "openai_compatible"
+
+models:
+  chat: "Qwen/Qwen2.5-VL-7B-Instruct"    # Must match a model_name in LiteLLM config
+  classifier: "Qwen/Qwen2.5-1.5B-Instruct"
+  vision: "Qwen/Qwen2.5-VL-7B-Instruct"
+  embedding: "BAAI/bge-m3"
+
+memory:
+  db_path: "./data/memory.db"
+  retrieval_top_k: 5
+  context_budget_tokens: 800
+
+vision_pipeline:
+  frame_interval_ms: 8000           # ms between passive vision captures
+  frame_interval_active_ms: 8000
+  frame_interval_speaking_ms: 20000 # back off while AI is speaking
+  max_pixels: 1280                  # resize width before sending to VL model
+  jpeg_quality: 75
+
+logging:
+  level: "INFO"
+  path: "./logs/eyes_and_ears.log"

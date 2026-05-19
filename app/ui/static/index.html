@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eyes and Ears</title>
+<style>
+:root {
+  --bg:        #0d0f17;
+  --surface:   #161923;
+  --surface2:  #1e2233;
+  --border:    #252a3a;
+  --text:      #e2e8f0;
+  --muted:     #4a5568;
+  --muted2:    #718096;
+
+  --idle:      #374151;
+  --listening: #1d4ed8;
+  --watching:  #6d28d9;
+  --thinking:  #b45309;
+  --speaking:  #065f46;
+  --interrupted:#c2410c;
+  --interrupt: #b91c1c;
+  --reasoning: #92400e;
+
+  --blue:      #3b82f6;
+  --purple:    #8b5cf6;
+  --green:     #10b981;
+  --amber:     #f59e0b;
+  --red:       #ef4444;
+  --orange:    #f97316;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Header ───────────────────────────────────────────── */
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 16px;
+}
+.header-left  { display: flex; align-items: center; gap: 10px; }
+.header-right { display: flex; align-items: center; gap: 20px; color: var(--muted2); }
+
+.logo { font-size: 18px; }
+.app-title { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; }
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.badge-sim  { background: #3b0764; color: #c084fc; }
+.badge-live { background: #064e3b; color: #34d399; }
+
+.ws-indicator { display: flex; align-items: center; gap: 6px; }
+.ws-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--red);
+  transition: background 0.3s;
+}
+.ws-dot.connected { background: var(--green); }
+
+/* ── Main layout ──────────────────────────────────────── */
+main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 260px 1fr 280px;
+  gap: 1px;
+  background: var(--border);
+  overflow: hidden;
+  min-height: 0;
+}
+
+.panel {
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.panel-header {
+  background: var(--surface);
+  padding: 8px 16px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.panel-body::-webkit-scrollbar { width: 4px; }
+.panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── State panel ──────────────────────────────────────── */
+.state-display {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.state-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.state-badge {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--idle);
+  transition: background 0.2s ease, color 0.2s ease;
+  color: #fff;
+}
+.state-timer {
+  font-size: 11px;
+  color: var(--muted2);
+  margin-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.transition-list { font-family: monospace; }
+.transition-row {
+  display: grid;
+  grid-template-columns: 1fr 14px 1fr auto;
+  gap: 4px;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted2);
+}
+.transition-row:last-child { border-bottom: none; }
+.transition-arrow { color: var(--muted); text-align: center; }
+.transition-time { font-size: 10px; color: var(--muted); text-align: right; }
+
+.stat-block { margin-top: 20px; }
+.stat-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 12px; color: var(--muted2); }
+.stat-val { color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* ── Conversation ─────────────────────────────────────── */
+#conversation {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 8px;
+}
+.msg { display: flex; flex-direction: column; max-width: 82%; }
+.msg.user    { align-self: flex-end; align-items: flex-end; }
+.msg.assistant { align-self: flex-start; align-items: flex-start; }
+.msg.system  { align-self: center; max-width: 100%; }
+
+.msg-role { font-size: 10px; color: var(--muted); margin-bottom: 4px; letter-spacing: 0.04em; }
+.msg-bubble {
+  padding: 10px 14px;
+  border-radius: 14px;
+  line-height: 1.55;
+  font-size: 13px;
+}
+.msg.user     .msg-bubble { background: #1e3a5f; border-bottom-right-radius: 4px; }
+.msg.assistant .msg-bubble { background: var(--surface2); border-bottom-left-radius: 4px; }
+.msg.system   .msg-bubble {
+  background: transparent;
+  color: var(--muted2);
+  font-size: 11px;
+  font-style: italic;
+  padding: 4px 0;
+}
+
+/* ── Pipeline panel ───────────────────────────────────── */
+.pipe-section { margin-bottom: 20px; }
+.pipe-section:last-child { margin-bottom: 0; }
+
+.text-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+  min-height: 40px;
+  color: var(--muted2);
+  transition: color 0.2s;
+  word-break: break-word;
+}
+.text-box.active { color: var(--text); }
+
+.confidence-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.conf-label { font-size: 10px; color: var(--muted); }
+.bar-track {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+.bar-fill.blue   { background: var(--blue); }
+.bar-fill.purple { background: var(--purple); }
+.bar-fill.green  { background: var(--green); }
+.conf-val { font-size: 10px; color: var(--muted); min-width: 30px; text-align: right; font-variant-numeric: tabular-nums; }
+
+.action-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--surface2);
+  color: var(--muted2);
+  transition: background 0.2s, color 0.2s;
+  margin-bottom: 10px;
+}
+
+.sal-row { margin-bottom: 8px; }
+.sal-header { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.classifier-reason { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 8px; }
+
+</style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────── -->
+<header>
+  <div class="header-left">
+    <span class="logo">👁</span>
+    <span class="app-title">Eyes and Ears</span>
+    <span class="badge badge-sim" id="mode-badge" style="display:none">SIM</span>
+  </div>
+  <div class="header-right">
+    <span id="model-name" style="font-size:12px">—</span>
+    <span id="uptime" style="font-variant-numeric:tabular-nums">00:00</span>
+    <div class="ws-indicator">
+      <div class="ws-dot" id="ws-dot"></div>
+      <span id="ws-label">Connecting…</span>
+    </div>
+  </div>
+</header>
+
+<!-- ── Main ───────────────────────────────────────────── -->
+<main>
+
+  <!-- LEFT: State -->
+  <div class="panel">
+    <div class="panel-header">State Machine</div>
+    <div class="panel-body">
+
+      <div class="state-display">
+        <div class="state-label">Current State</div>
+        <span class="state-badge" id="state-badge">IDLE</span>
+        <div class="state-timer" id="state-timer">0.0s</div>
+      </div>
+
+      <div class="section-label">Transitions</div>
+      <div class="transition-list" id="transitions"></div>
+
+      <div class="stat-block">
+        <div class="section-label">Session</div>
+        <div class="stat-row">
+          <span>ID</span>
+          <span class="stat-val" id="session-id">—</span>
+        </div>
+        <div class="stat-row">
+          <span>Total transitions</span>
+          <span class="stat-val" id="transition-count">0</span>
+        </div>
+      </div>
+
+      <div class="stat-block">
+        <div class="section-label">Memory</div>
+        <div class="stat-row">
+          <span>Episodes</span>
+          <span class="stat-val" id="mem-episodes">—</span>
+        </div>
+        <div class="stat-row">
+          <span>Facts</span>
+          <span class="stat-val" id="mem-facts">—</span>
+        </div>
+        <div class="stat-row">
+          <span>Sessions</span>
+          <span class="stat-val" id="mem-sessions">—</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CENTER: Conversation -->
+  <div class="panel">
+    <div class="panel-header">Conversation</div>
+    <div class="panel-body" id="conversation"></div>
+  </div>
+
+  <!-- RIGHT: Pipeline -->
+  <div class="panel">
+    <div class="panel-header">Pipeline</div>
+    <div class="panel-body">
+
+      <!-- Transcript -->
+      <div class="pipe-section">
+        <div class="section-label">Live Transcript</div>
+        <div class="text-box" id="transcript">Waiting for speech…</div>
+        <div class="confidence-row">
+          <span class="conf-label">Confidence</span>
+          <div class="bar-track"><div class="bar-fill blue" id="conf-bar"></div></div>
+          <span class="conf-val" id="conf-val">—</span>
+        </div>
+      </div>
+
+      <!-- Vision -->
+      <div class="pipe-section">
+        <div class="section-label">👁 Vision</div>
+        <div class="text-box" id="vision">No screen content…</div>
+      </div>
+
+      <!-- Classifier -->
+      <div class="pipe-section">
+        <div class="section-label">Classifier</div>
+        <div class="action-badge" id="action-badge">—</div>
+
+        <div class="sal-row">
+          <div class="sal-header">
+            <span>Speech salience</span>
+            <span id="speech-val">0.00</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill blue" id="speech-bar"></div>
+          </div>
+        </div>
+
+        <div class="sal-row">
+          <div class="sal-header">
+            <span>Stream salience</span>
+            <span id="stream-val">0.00</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill purple" id="stream-bar"></div>
+          </div>
+        </div>
+
+        <div class="classifier-reason" id="clf-reason">—</div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── Constants ────────────────────────────────────────────
+const STATE_BG = {
+  IDLE:               '#374151',
+  LISTENING:          '#1d4ed8',
+  WATCHING:           '#6d28d9',
+  THINKING:           '#b45309',
+  SPEAKING:           '#065f46',
+  USER_INTERRUPTED:   '#c2410c',
+  STREAM_INTERRUPTED: '#c2410c',
+  INTERRUPT:          '#b91c1c',
+  REASONING:          '#92400e',
+};
+
+const ACTION_STYLE = {
+  RESPOND:   { bg: '#064e3b', color: '#34d399' },
+  REACT:     { bg: '#3b0764', color: '#c084fc' },
+  INTERRUPT: { bg: '#7f1d1d', color: '#fca5a5' },
+  LISTEN:    { bg: '#1e3a5f', color: '#93c5fd' },
+  WATCH:     { bg: '#1f2937', color: '#9ca3af' },
+  HOLD:      { bg: '#1f2937', color: '#6b7280' },
+};
+
+// ── State ────────────────────────────────────────────────
+let startTime       = null;
+let stateEnteredAt  = Date.now();
+let transitionCount = 0;
+let reconnectTimer  = null;
+
+// ── WebSocket ────────────────────────────────────────────
+function connect() {
+  const ws = new WebSocket(`ws://${location.host}/ws`);
+
+  ws.onopen = () => {
+    document.getElementById('ws-dot').classList.add('connected');
+    document.getElementById('ws-label').textContent = 'Connected';
+    clearTimeout(reconnectTimer);
+  };
+
+  ws.onclose = () => {
+    document.getElementById('ws-dot').classList.remove('connected');
+    document.getElementById('ws-label').textContent = 'Reconnecting…';
+    reconnectTimer = setTimeout(connect, 2500);
+  };
+
+  ws.onerror = () => {};
+
+  ws.onmessage = e => {
+    try { route(JSON.parse(e.data)); } catch (_) {}
+  };
+}
+
+// ── Message router ───────────────────────────────────────
+function route(msg) {
+  switch (msg.type) {
+    case 'startup':       onStartup(msg);       break;
+    case 'state_change':  onStateChange(msg);   break;
+    case 'transcript':    onTranscript(msg);    break;
+    case 'vision':        onVision(msg);        break;
+    case 'classifier':    onClassifier(msg);    break;
+    case 'user_turn':     onUserTurn(msg);      break;
+    case 'assistant_turn':onAssistantTurn(msg); break;
+    case 'memory_stats':  onMemoryStats(msg);   break;
+    case 'shutdown':      addSystem('Pipeline stopped'); break;
+  }
+}
+
+// ── Handlers ─────────────────────────────────────────────
+function onStartup(msg) {
+  startTime = Date.now();
+  setText('model-name', msg.model || '—');
+
+  const badge = document.getElementById('mode-badge');
+  if (msg.sim_mode) {
+    badge.textContent = 'SIM';
+    badge.className = 'badge badge-sim';
+    badge.style.display = 'inline';
+  } else {
+    badge.textContent = 'LIVE';
+    badge.className = 'badge badge-live';
+    badge.style.display = 'inline';
+  }
+
+  const sid = msg.session_id || '—';
+  setText('session-id', sid.length > 8 ? sid.slice(0, 8) + '…' : sid);
+  addSystem('Pipeline started' + (msg.sim_mode ? ' · sim mode' : ' · live'));
+}
+
+function onStateChange(msg) {
+  const state = msg.state || 'IDLE';
+  stateEnteredAt = Date.now();
+  transitionCount++;
+  setText('transition-count', transitionCount);
+
+  // Update badge
+  const badge = document.getElementById('state-badge');
+  badge.textContent = state;
+  badge.style.background = STATE_BG[state] || '#374151';
+
+  // Add transition row
+  const list = document.getElementById('transitions');
+  const row  = document.createElement('div');
+  row.className = 'transition-row';
+  const toColor = STATE_BG[state] || '#e2e8f0';
+  const now = new Date().toLocaleTimeString('en', {
+    hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+  row.innerHTML = `
+    <span style="color:#6b7280;overflow:hidden;text-overflow:ellipsis">${msg.prev_state || '?'}</span>
+    <span class="transition-arrow">→</span>
+    <span style="color:${toColor}">${state}</span>
+    <span class="transition-time">${now}</span>
+  `;
+  list.prepend(row);
+  while (list.children.length > 10) list.removeChild(list.lastChild);
+}
+
+function onTranscript(msg) {
+  const box = document.getElementById('transcript');
+  box.textContent = msg.text || '—';
+  box.classList.toggle('active', !!msg.text);
+  const pct = Math.round((msg.confidence || 0) * 100);
+  document.getElementById('conf-bar').style.width = pct + '%';
+  setText('conf-val', pct + '%');
+}
+
+function onVision(msg) {
+  const box = document.getElementById('vision');
+  box.textContent = msg.description || '—';
+  box.classList.toggle('active', !!msg.description);
+}
+
+function onClassifier(msg) {
+  const action = msg.action || 'HOLD';
+  const badge  = document.getElementById('action-badge');
+  badge.textContent = action;
+  const style = ACTION_STYLE[action] || ACTION_STYLE.HOLD;
+  badge.style.background = style.bg;
+  badge.style.color      = style.color;
+
+  const speech = msg.speech_salience || 0;
+  const stream = msg.stream_salience || 0;
+  document.getElementById('speech-bar').style.width = (speech * 100) + '%';
+  document.getElementById('stream-bar').style.width = (stream * 100) + '%';
+  setText('speech-val', speech.toFixed(2));
+  setText('stream-val', stream.toFixed(2));
+  setText('clf-reason', msg.reason || '—');
+}
+
+function onUserTurn(msg) {
+  addMsg('user', 'You', msg.text);
+  // Clear transcript after turn
+  const box = document.getElementById('transcript');
+  box.textContent = 'Waiting for speech…';
+  box.classList.remove('active');
+  document.getElementById('conf-bar').style.width = '0%';
+  setText('conf-val', '—');
+}
+
+function onAssistantTurn(msg) {
+  addMsg('assistant', msg.persona || 'Aria', msg.text);
+}
+
+function onMemoryStats(msg) {
+  const s = msg.stats || {};
+  setText('mem-episodes', s.episodes  ?? '—');
+  setText('mem-facts',    s.semantic_facts ?? '—');
+  setText('mem-sessions', s.sessions  ?? '—');
+}
+
+// ── DOM helpers ──────────────────────────────────────────
+function addMsg(role, name, text) {
+  const conv = document.getElementById('conversation');
+  const el   = document.createElement('div');
+  el.className = `msg ${role}`;
+  el.innerHTML = `
+    <div class="msg-role">${esc(name)}</div>
+    <div class="msg-bubble">${esc(text)}</div>
+  `;
+  conv.appendChild(el);
+  conv.scrollTop = conv.scrollHeight;
+}
+
+function addSystem(text) {
+  const conv = document.getElementById('conversation');
+  const el   = document.createElement('div');
+  el.className = 'msg system';
+  el.innerHTML = `<div class="msg-bubble">${esc(text)}</div>`;
+  conv.appendChild(el);
+  conv.scrollTop = conv.scrollHeight;
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// ── Timers ───────────────────────────────────────────────
+setInterval(() => {
+  // State timer
+  const inState = ((Date.now() - stateEnteredAt) / 1000).toFixed(1);
+  setText('state-timer', inState + 's');
+
+  // Uptime
+  if (startTime) {
+    const s  = Math.floor((Date.now() - startTime) / 1000);
+    const mm = String(Math.floor(s / 60)).padStart(2, '0');
+    const ss = String(s % 60).padStart(2, '0');
+    setText('uptime', mm + ':' + ss);
+  }
+}, 500);
+
+// ── Boot ─────────────────────────────────────────────────
+connect();
+</script>
+</body>
+</html>

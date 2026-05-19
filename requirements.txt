@@ -1,0 +1,24 @@
+# ── Eyes and Ears — Z790 client requirements ──────────────────────────────
+#
+# Install:  pip install -r requirements.txt
+# Python:   3.11+
+
+# HTTP / networking
+requests>=2.31.0
+websockets>=12.0
+
+# UI server
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+
+# Audio — playback and mic capture
+sounddevice>=0.4.6
+numpy>=1.26.0
+
+# Screen capture
+mss>=9.0.1
+Pillow>=10.0.0
+
+# Testing
+pytest>=8.0.0
+pytest-asyncio>=0.23.0

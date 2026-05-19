@@ -1,0 +1,19 @@
+[Unit]
+Description=vLLM - Qwen2.5-VL-7B-Instruct (Chat + Vision) port 8012
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USERNAME
+WorkingDirectory=/home/YOUR_USERNAME
+ExecStart=/home/YOUR_USERNAME/venvs/vllm/bin/vllm serve Qwen/Qwen2.5-VL-7B-Instruct --host 0.0.0.0 --port 8012 --dtype bfloat16 --max-model-len 4096 --gpu-memory-utilization 0.35 --max-num-seqs 4
+Restart=on-failure
+RestartSec=30
+TimeoutStartSec=300
+Environment=PATH=/home/YOUR_USERNAME/venvs/vllm/bin:/home/YOUR_USERNAME/miniforge3/bin:/usr/local/cuda-13.0/bin:/usr/local/bin:/usr/bin:/bin
+Environment=CUDA_HOME=/usr/local/cuda-13.0
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

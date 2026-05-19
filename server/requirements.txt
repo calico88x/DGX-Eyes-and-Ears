@@ -1,0 +1,51 @@
+# ── Eyes and Ears — DGX Spark server requirements ────────────────────────────────
+#
+# Python:   3.11+
+#
+# These components run as separate services and should be installed into
+# their own environments. See server/README.md for full setup instructions.
+#
+# ── Whisper ASR server ─────────────────────────────────────────────────────
+# Install into base or a dedicated env:
+#   pip install -r server/requirements.txt
+#
+faster-whisper>=1.2.0
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+numpy>=1.26.0
+python-multipart>=0.0.9
+ 
+# ── vLLM ───────────────────────────────────────────────────────────────────
+# Install into a dedicated venv (keeps it isolated from other projects):
+#   python3 -m venv ~/venvs/vllm
+#   ~/venvs/vllm/bin/pip install vllm==0.20.1
+#
+vllm==0.20.1
+ 
+# ── LiteLLM ────────────────────────────────────────────────────────────────
+# Install into a dedicated env and run as a systemd service:
+#   python3 -m venv ~/litellm-env
+#   ~/litellm-env/bin/pip install "litellm[proxy]"
+#
+litellm[proxy]>=1.40.0
+ 
+# ── ctranslate2 — CUDA build required on GB10 ──────────────────────────────
+#
+# The PyPI ARM64 wheel ships CPU-only. For GPU transcription build from
+# source against the system CUDA toolkit:
+#
+#   export PATH=/usr/local/cuda-13.0/bin:$PATH
+#   export CUDA_HOME=/usr/local/cuda-13.0
+#   pip install cmake ninja
+#   git clone https://github.com/OpenNMT/CTranslate2.git --recursive
+#   cd CTranslate2
+#   mkdir build && cd build
+#   cmake .. -DWITH_CUDA=ON -DCUDA_DYNAMIC_LOADING=ON \
+#       -DWITH_MKL=OFF -DOPENMP_RUNTIME=COMP \
+#       -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-13.0 \
+#       -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local
+#   make -j$(nproc) && sudo make install
+#   cd ../python && pip install .
+#
+#   Verify: python -c "import ctranslate2; print(ctranslate2.get_cuda_device_count())"
+# ---------------------------------------------------------------------------

@@ -1,0 +1,75 @@
+# server/litellm_config.example.yaml
+#
+# LiteLLM proxy configuration for Eyes and Ears.
+#
+# This file shows the minimum entries needed. If you already have a
+# litellm_config.yaml for other models, append the Eyes and Ears section
+# to your existing model_list rather than replacing the whole file.
+#
+# Deploy:
+#   Copy to ~/litellm/litellm_config.yaml (or your existing config path)
+#   sudo systemctl restart litellm
+#
+# LiteLLM docs: https://docs.litellm.ai/docs/proxy/configs
+
+model_list:
+
+  # ── Eyes and Ears ──────────────────────────────────────────────────────────
+  #
+  # Both chat and vision route to the same Qwen2.5-VL instance (port 8012).
+  # supports_vision: true is REQUIRED — without it LiteLLM strips image
+  # content from requests before forwarding to vLLM.
+
+  - model_name: Qwen/Qwen2.5-VL-7B-Instruct
+    litellm_params:
+      model: hosted_vllm/Qwen/Qwen2.5-VL-7B-Instruct
+      api_base: http://127.0.0.1:8012/v1
+      api_key: sk-vllm
+      max_tokens: 512
+      timeout: 30
+      stream_timeout: 30
+    model_info:
+      supports_vision: true
+      health_check: false
+
+  - model_name: Qwen/Qwen2.5-7B-Instruct        # alias — chat requests use this name
+    litellm_params:
+      model: hosted_vllm/Qwen/Qwen2.5-VL-7B-Instruct
+      api_base: http://127.0.0.1:8012/v1
+      api_key: sk-vllm
+      max_tokens: 2048
+      timeout: 120
+      stream_timeout: 120
+    model_info:
+      supports_vision: true
+      supports_function_calling: false
+      health_check: false
+
+  - model_name: BAAI/bge-m3
+    litellm_params:
+      model: hosted_vllm/BAAI/bge-m3
+      api_base: http://127.0.0.1:8013/v1
+      api_key: sk-vllm
+      timeout: 30
+    model_info:
+      health_check: false
+
+  # ── TTS ────────────────────────────────────────────────────────────────────
+  # Kokoro exposes an OpenAI-compatible /v1/audio/speech endpoint.
+  - model_name: kokoro
+    litellm_params:
+      model: openai/kokoro
+      api_base: http://127.0.0.1:8880/v1
+      api_key: sk-kokoro
+
+  # ── Add your other models below ────────────────────────────────────────────
+
+
+litellm_settings:
+  drop_params: true
+  ensure_alternating_roles: true
+  force_ipv4: true
+  request_timeout: 300
+
+general_settings:
+  background_health_checks: false

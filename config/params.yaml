@@ -1,0 +1,31 @@
+chat_llm:
+  temperature: 0.85
+  max_tokens: 35
+  top_p: 0.95
+  repetition_penalty: 1.1
+  stream: true
+
+classifier_llm:
+  model: "Qwen/Qwen2.5-1.5B-Instruct"
+  temperature: 0.1
+  max_tokens: 150
+  top_p: 0.9
+  stream: false
+
+vision_model:
+  temperature: 0.4
+  max_tokens: 300
+  stream: false
+
+embedding_model:
+  dimensions: 1536
+
+audio:
+  output_device: 16
+  input_device: 1
+
+classifier_thresholds:
+  speech_respond_threshold:   0.60
+  stream_react_threshold:     0.70
+  stream_override_threshold:  0.85
+  stream_interrupt_threshold: 0.90

@@ -1,0 +1,7 @@
+enabled: false
+stt_delay_ms: 300
+vision_delay_ms: 800
+llm_delay_ms: 1200
+canned_responses:
+  - trigger: "hello"
+    response: "Hey! Good to see you. What are we getting into today?"

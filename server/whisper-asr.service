@@ -1,0 +1,21 @@
+[Unit]
+Description=Whisper ASR WebSocket Server
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USERNAME
+WorkingDirectory=/home/YOUR_USERNAME
+ExecStart=/home/YOUR_USERNAME/miniforge3/bin/python /home/YOUR_USERNAME/whisper_server.py
+Restart=always
+RestartSec=10
+Environment=PATH=/home/YOUR_USERNAME/miniforge3/bin:/usr/local/cuda-13.0/bin:/usr/local/bin:/usr/bin:/bin
+Environment=CUDA_HOME=/usr/local/cuda-13.0
+# Override model path if needed:
+# Environment=WHISPER_MODEL_DIR=/path/to/local/model
+StandardOutput=journal
+StandardError=journal
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
