@@ -119,7 +119,7 @@ system_prompt: |
 
 **Replace the username in server files first:**
 ```bash
-find server/ -type f | xargs sed -i "s|/home/nova|/home/$(whoami)|g"
+find server/ -type f | xargs sed -i "s|/home/YOUR_USERNAME|/home/$(whoami)|g"
 ```
 
 **Download models:**
