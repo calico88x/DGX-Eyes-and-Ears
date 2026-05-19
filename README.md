@@ -4,6 +4,7 @@
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)
 ![Platform](https://img.shields.io/badge/Server-NVIDIA_DGX_Spark-76B900?style=flat&logo=nvidia&logoColor=white)
+![Server](https://img.shields.io/badge/platform-aarch64%20Ubuntu-orange)
 ![Client](https://img.shields.io/badge/Client-Windows-0078D4?style=flat&logo=windows&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
 ![Tests](https://img.shields.io/badge/Tests-370_passing-brightgreen?style=flat)
