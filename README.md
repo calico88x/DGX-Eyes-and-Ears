@@ -1,4 +1,6 @@
 # Eyes and Ears (Beta)
+This is just the beginning of an ambitious project with the goal of creating a natural conversational AI that can see your screen and talk to you.
+Currently the project employs older models just to get a working app.
 
 <div align="center">
 
@@ -197,6 +199,14 @@ All services are stubbed with canned responses. **370 tests** cover the complete
 The companion maintains a persistent SQLite memory database across sessions. Each conversation is stored with embeddings and semantic facts — allowing the companion to reference shared history naturally over time.
 
 Memory lives in `data/memory.db` and is **gitignored** — it stays on your machine only.
+
+---
+
+Future Goals:
+- More advanced TTS for better voices
+- Newer models for VL and LLM
+- Avatar system version 1.0 >> Static image on-screen avatars with expressions/moods
+- Avatar system version 2.0 >> Animated VRoid on-screen avatar with expressions/moods
 
 ---
 
