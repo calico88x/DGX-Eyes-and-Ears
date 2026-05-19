@@ -5,23 +5,23 @@
 
 services:
   litellm:
-    base_url: "http://YOUR_ZGX_IP:4000"   # LiteLLM proxy on ZGX
+    base_url: "http://YOUR_DGX_Spark_IP:4000"   # LiteLLM proxy on ZGX
     api_key: "sk-local"                    # LiteLLM master key (if set)
 
   stt:
-    base_url: "ws://YOUR_ZGX_IP:9091/asr" # Whisper ASR WebSocket
+    base_url: "ws://YOUR_DGX_Spark_IP:9091/asr" # Whisper ASR WebSocket
     type: "websocket"
     chunk_ms: 250
     sample_rate: 16000
     channels: 1
 
   tts:
-    base_url: "http://YOUR_ZGX_IP:8880"   # Kokoro TTS
+    base_url: "http://YOUR_DGX_Spark_IP:8880"   # Kokoro TTS
     voice: "af_heart"
     type: "http_stream"
 
   vision:
-    base_url: "http://YOUR_ZGX_IP:4000"   # Routes through LiteLLM
+    base_url: "http://YOUR_DGX_Spark_IP:4000"   # Routes through LiteLLM
     type: "openai_compatible"
 
 models:
