@@ -13,13 +13,13 @@ Complete setup guide for the DGX Spark inference server.
 
 ## Step 0 — Replace username
 
-Every path in the service files uses `nova` as the username.
+Every path in the service files uses `YOUR_USERNAME` as the username.
 Replace it with your own before copying any files:
 
 ```bash
 YOUR_USER=$(whoami)
 # Run from repo root
-find server/ -type f | xargs sed -i "s|/home/nova|/home/$YOUR_USER|g"
+find server/ -type f | xargs sed -i "s|/home/YOUR_USERNAME|/home/$YOUR_USER|g"
 ```
 
 ---
