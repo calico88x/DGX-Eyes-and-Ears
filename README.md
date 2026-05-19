@@ -1,6 +1,6 @@
 # Eyes and Ears
 
-An AI companion that can see your screen and hear your voice. She watches what
+An AI companion that can see your screen and hear your voice. It watches what
 you're doing, reacts to what's on screen, responds to speech, and maintains
 memory across conversations.
 
