@@ -103,8 +103,8 @@ python -c "import sounddevice; print(sounddevice.query_devices())"
 ```
 ```yaml
 audio:
-  output_device: 16   # your speakers/headphones
-  input_device: 1     # your microphone
+  output_device: 16     # your speakers/headphones (your number may vary)
+  input_device: 1       # your microphone (your number may vary)
 ```
 
 **`config/personality.yaml`** — give your companion a name and voice:
