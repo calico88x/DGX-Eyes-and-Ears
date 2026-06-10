@@ -18,9 +18,9 @@ python-multipart>=0.0.9
 # ── vLLM ───────────────────────────────────────────────────────────────────
 # Install into a dedicated venv (keeps it isolated from other projects):
 #   python3 -m venv ~/venvs/vllm
-#   ~/venvs/vllm/bin/pip install vllm==0.20.1
+#   ~/venvs/vllm/bin/pip install vllm==0.22.0
 #
-vllm==0.20.1
+vllm==0.22.0
  
 # ── LiteLLM ────────────────────────────────────────────────────────────────
 # Install into a dedicated env and run as a systemd service:
