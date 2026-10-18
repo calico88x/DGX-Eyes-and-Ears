@@ -15,13 +15,8 @@ uvicorn[standard]>=0.27.0
 numpy>=1.26.0
 python-multipart>=0.0.9
  
-# ── vLLM ───────────────────────────────────────────────────────────────────
-# Install into a dedicated venv (keeps it isolated from other projects):
-#   python3 -m venv ~/venvs/vllm
-#   ~/venvs/vllm/bin/pip install vllm==0.20.1
-#
-vllm==0.20.1
- 
+# vLLM is an external inference service, not installed by this file.
+
 # ── LiteLLM ────────────────────────────────────────────────────────────────
 # Install into a dedicated env and run as a systemd service:
 #   python3 -m venv ~/litellm-env

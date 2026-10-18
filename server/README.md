@@ -74,14 +74,18 @@ python -c "import ctranslate2; print('CUDA devices:', ctranslate2.get_cuda_devic
 
 ---
 
-## Step 3 — vLLM
+## Step 3 — vLLM (historical deployment)
 
-```bash
-mkdir -p ~/venvs
-python3 -m venv ~/venvs/vllm
-~/venvs/vllm/bin/pip install vllm==0.20.1
-~/venvs/vllm/bin/vllm --version   # should print 0.20.1
-```
+The original deployment used a separately managed vLLM inference
+service. vLLM is not a Python dependency of the Windows client.
+
+The previous pinned version has known security vulnerabilities.
+This historical setup is no longer validated against current
+CUDA, PyTorch, ARM64, or vLLM releases.
+
+Before reproducing this deployment, select a security-patched
+vLLM release compatible with the target hardware and validate
+it independently. Do not use the original installation pin.
 
 ---
 
